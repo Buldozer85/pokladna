@@ -37,48 +37,71 @@ public class Objednavky extends UnicastRemoteObject implements shared.Objednavky
     public List<Objednavka> getObjednavky() throws RemoteException {
         List<Objednavka> objednavky = new ArrayList<>();
 
-        try (Connection conn = Database.get().getConnection()) {
-            Statement objednavkyStmt = conn.createStatement();
-            ResultSet objednavkyRs = objednavkyStmt.executeQuery(
-                    "SELECT objednavky.ID, objednavky.celkovaCena, objednavky.casObjednavky FROM objednavky");
+        try (Connection conn = Database.get().getConnection();
+                Statement objednavkyStmt = conn.createStatement();
 
-            PreparedStatement polozkyStmt = conn.prepareStatement(
-                    "SELECT DISTINCT polozky_v_objednavce.Polozka_ID, polozky.nazev, polozky.cena, polozky.druh FROM polozky_v_objednavce JOIN polozky ON polozky.ID = polozky_v_objednavce.Polozka_ID WHERE polozky_v_objednavce.Objednavka_ID  = ?");
+                ResultSet objednavkyRs = objednavkyStmt.executeQuery(
+                        "SELECT objednavky.ID, objednavky.celkovaCena, objednavky.casObjednavky FROM objednavky");
 
-            PreparedStatement pridavkyStmt = conn.prepareStatement(
-                    "SELECT polozky_v_objednavce.Pridavek_ID, polozky_v_objednavce.cisloPolozkyVobjednavce, pridavky.nazev, pridavky.cena FROM polozky_v_objednavce  JOIN pridavky ON pridavky.ID = polozky_v_objednavce.Pridavek_ID  JOIN polozky ON polozky.ID = polozky_v_objednavce.Polozka_ID WHERE polozky_v_objednavce.cisloPolozkyVobjednavce = ? AND polozky_v_objednavce. = ? ");
+                PreparedStatement polozkyStmt = conn.prepareStatement(
+                        "SELECT DISTINCT polozky_v_objednavce.Polozka_ID, polozky.nazev, polozky.cena, polozky.druh, polozky_v_objednavce.cisloPolozkyVobjednavce FROM polozky_v_objednavce JOIN polozky ON polozky.ID = polozky_v_objednavce.Polozka_ID WHERE polozky_v_objednavce.Objednavka_ID  = ? ORDER BY polozky_v_objednavce.cisloPolozkyVobjednavce");
+
+                PreparedStatement pridavkyStmt = conn.prepareStatement(
+                        "SELECT polozky_v_objednavce.Pridavek_ID, polozky_v_objednavce.cisloPolozkyVobjednavce, pridavky.nazev, pridavky.cena FROM polozky_v_objednavce  JOIN pridavky ON pridavky.ID = polozky_v_objednavce.Pridavek_ID  JOIN polozky ON polozky.ID = polozky_v_objednavce.Polozka_ID WHERE polozky_v_objednavce.cisloPolozkyVobjednavce = ? AND polozky_v_objednavce.Objednavka_ID = ? AND polozky_v_objednavce.Polozka_ID = ? ")) {
+            ;
 
             while (objednavkyRs.next()) {
+
                 Objednavka objednavka = new Objednavka().setCasObjednavky(objednavkyRs.getString("casObjednavky"))
                         .setCena(objednavkyRs.getDouble("celkovaCena")).setId(objednavkyRs.getInt("ID"));
+
                 polozkyStmt.setInt(1, objednavka.getId());
+
                 try (ResultSet polozkaRs = polozkyStmt.executeQuery()) {
+
                     while (polozkaRs.next()) {
-                        Polozka polozka = new Polozka().setId(polozkaRs.getInt("ID"))
+
+                        Polozka polozka = new Polozka().setId(polozkaRs.getInt("Polozka_ID"))
                                 .setNazev(polozkaRs.getString("nazev")).setCena(polozkaRs.getDouble("cena"))
                                 .setDruh(polozkaRs.getString("druh"));
+
                         objednavka.getPolozky().add(polozka);
-                        int cisloPolozkyVobjednavce =polozkaRs.getInt("cisloPolozkyVobjednavce");
+
+                        int cisloPolozkyVobjednavce = polozkaRs.getInt("cisloPolozkyVobjednavce");
 
                         pridavkyStmt.setInt(1, cisloPolozkyVobjednavce);
+                        pridavkyStmt.setInt(2, objednavka.getId());
+                        pridavkyStmt.setInt(3, polozka.getId());
+
                         try (ResultSet pridavekRs = pridavkyStmt.executeQuery()) {
+
                             while (pridavekRs.next()) {
-                                Pridavek pridavek = new Pridavek().setId(pridavekRs.getInt("ID"))
+
+                                Pridavek pridavek = new Pridavek().setId(pridavekRs.getInt("Pridavek_ID"))
                                         .setNazev(pridavekRs.getString("nazev")).setCena(pridavekRs.getDouble("cena"));
-                                        polozka.getPridavky().add(pridavek);
+
+                                polozka.getPridavky().add(pridavek);
+
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+                            e.printStackTrace();
+
+                            continue;
                         }
                     }
                 } catch (Exception e) {
-                    // TODO: handle exception
+                    e.printStackTrace();
+
+                    continue;
                 }
+                objednavky.add(objednavka);
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
+            return null;
+
         }
-        return null;
+        return objednavky;
     }
 
     @Override

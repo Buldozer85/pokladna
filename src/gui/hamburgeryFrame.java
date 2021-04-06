@@ -22,6 +22,7 @@ import shared.Objednavky;
 import shared.Polozka;
 import shared.Polozky;
 import shared.Pridavek;
+import shared.Tiskarna;
 
 public class hamburgeryFrame extends JFrame {
     /**
@@ -36,6 +37,7 @@ public class hamburgeryFrame extends JFrame {
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private  Double cena = 0.0;
     private  Objednavka objednavka ;
+    private Tiskarna tiskarna;
 
     public hamburgeryFrame() {
         int height = screenSize.height * 2 / 3;
@@ -76,6 +78,12 @@ public class hamburgeryFrame extends JFrame {
 
         obalPotvrdit.add(potvrdit);
         obalPotvrdit.add(storno);
+
+        storno.addActionListener((e)->{
+            celkovaCenaPane.setText("");
+            objednavkyPane.setText("Objednávka" + "\n" + "_________________________");
+            Objednavka.getObjednavky().clear();
+        });
 
         FlowLayout flowLayoutPotvrdit = new FlowLayout();
         flowLayoutPotvrdit.setHgap(5);
@@ -139,6 +147,7 @@ public class hamburgeryFrame extends JFrame {
             }
             }
             try {
+                if(!Objednavka.getObjednavky().isEmpty()){
                 Objednavky objednavky = (Objednavky) Naming.lookup("rmi://localhost:12345/objednavky");
                 java.util.Date dt = new java.util.Date();
 
@@ -148,10 +157,20 @@ public class hamburgeryFrame extends JFrame {
                 String currentTime = sdf.format(dt);
                 LinkedList<Polozka> o = Objednavka.getObjednavky();
                 objednavka = new Objednavka().setCasObjednavky(currentTime).setCena(cena).setPolozky(o);
-               
+                tiskarna = Tiskarna.getITiskarna();
+                tiskarna.Tiskni(objednavka);
+                objednavky.writeObjednavka(objednavka);
+                o = null;
+                Objednavka.getObjednavky().clear();
+                this.setVisible(false);
+                new PokladnaUvodniFrame().setVisible(true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "Objednávka neobsahuje žádnou položku");
+                }
               
 
-           objednavky.writeObjednavka(objednavka);
+           
             } catch (RemoteException | NotBoundException | MalformedURLException ex) {
         
                 ex.printStackTrace();

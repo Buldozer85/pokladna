@@ -15,6 +15,7 @@ private javax.swing.JLabel dvoriNald;
     private javax.swing.JButton novaObj;
     private hamburgeryFrame nabidka;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private ObjednavkyFrame objednavkyFrame;
 
    
 
@@ -45,7 +46,9 @@ private javax.swing.JLabel dvoriNald;
         historieObj.setText("Historie Objednávek");
 
         historieObj.addActionListener((e) -> {
-       
+       objednavkyFrame = new ObjednavkyFrame();
+       objednavkyFrame.setVisible(true);
+       this.setVisible(false);
         });
 
         dvoriNald.setFont(new java.awt.Font("Dialog", 1, 48));
