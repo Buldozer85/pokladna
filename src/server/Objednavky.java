@@ -41,7 +41,7 @@ public class Objednavky extends UnicastRemoteObject implements shared.Objednavky
                 Statement objednavkyStmt = conn.createStatement();
 
                 ResultSet objednavkyRs = objednavkyStmt.executeQuery(
-                        "SELECT objednavky.ID, objednavky.celkovaCena, objednavky.casObjednavky FROM objednavky");
+                        "SELECT objednavky.ID, objednavky.celkovaCena, objednavky.casObjednavky FROM objednavky ORDER BY objednavky.ID");
 
                 PreparedStatement polozkyStmt = conn.prepareStatement(
                         "SELECT DISTINCT polozky_v_objednavce.Polozka_ID, polozky.nazev, polozky.cena, polozky.druh, polozky_v_objednavce.cisloPolozkyVobjednavce FROM polozky_v_objednavce JOIN polozky ON polozky.ID = polozky_v_objednavce.Polozka_ID WHERE polozky_v_objednavce.Objednavka_ID  = ? ORDER BY polozky_v_objednavce.cisloPolozkyVobjednavce");
