@@ -5,39 +5,48 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import server.DB.Database;
 import shared.Polozka;
 
 public class Polozky extends UnicastRemoteObject implements shared.Polozky {
-   
-   protected Polozky() throws RemoteException{
-       super();
-   }
-   
-    @Override
-    public Polozka getPolozka(int id){
-      return null;  
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8899018683648579653L;
+
+    protected Polozky() throws RemoteException {
+        super();
     }
+
     @Override
-    public boolean writePolozka(Polozka polozka) throws RemoteException{
+    public Polozka getPolozka(int id) {
+        return null;
+    }
+
+    @Override
+    public boolean writePolozka(Polozka polozka) throws RemoteException {
         try (Connection conn = Database.get().getConnection()) {
             conn.setAutoCommit(false);
 
             try (java.sql.PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO polozky (nazev, cena) VALUES (?,?)", PreparedStatement.RETURN_GENERATED_KEYS
-            )){
+                    "INSERT INTO polozky (nazev, cena, druh) VALUES (?,?,?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, polozka.getNazev());
                 stmt.setDouble(2, polozka.getCena());
+                stmt.setObject(3, polozka.getDruh());
 
-                if(stmt.executeUpdate() != 1){
-                    throw new Exception("Nepodaril se zapis tridy");
+                if (stmt.executeUpdate() != 1) {
+                    throw new Exception("Nepodaril se zapis polozky");
                 }
 
-                ResultSet rs =stmt.getGeneratedKeys();
+                ResultSet rs = stmt.getGeneratedKeys();
 
-                if(rs.next()){
+                if (rs.next()) {
                     polozka.setId(rs.getInt(1));
                 }
                 rs.close();
@@ -54,9 +63,26 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
             return false;
         }
     }
+
     @Override
-    public List<Polozka> getPolozky() throws RemoteException{
-        return null;
+    public List<Polozka> getPolozky() throws RemoteException {
+        List<Polozka> polozky = new ArrayList<>();
+        try (Connection conn = Database.get().getConnection()) {
+            Statement polozkyStmt = conn.createStatement();
+            ResultSet polozkyRs = polozkyStmt
+                    .executeQuery("SELECT polozky.ID, polozky.nazev, polozky.cena, polozky.druh FROM polozky");
+
+            while (polozkyRs.next()) {
+                Polozka polozka = new Polozka().setId(polozkyRs.getInt("ID")).setNazev(polozkyRs.getString("nazev"))
+                        .setCena(polozkyRs.getDouble("cena")).setDruh(polozkyRs.getString("druh"));
+                polozky.add(polozka);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return polozky;
     }
 
 }

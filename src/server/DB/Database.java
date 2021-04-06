@@ -2,7 +2,7 @@ package server.DB;
 
 import java.sql.SQLException;
 
-import com.mysql.cj.jdbc.Driver;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,7 +30,7 @@ public class Database {
         private final String defaultDB = "pokladna";
 
         public Connection getConnection() throws SQLException {
-            return getConnection(typDB,serverName,port,defaultDB, "root", "");
+            return getConnection(typDB,serverName,port,defaultDB, user, pass);
         }
 
         public Connection getConnection(String typDB, String serverName, int port, String defaultDB, String user, String pass) throws SQLException {

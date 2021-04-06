@@ -3,11 +3,13 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class App {
+public class Server {
     public static void main(String[] args) {
         try {
             Registry reg = LocateRegistry.createRegistry(12345);
             reg.rebind("polozky", new Polozky());
+            reg.rebind("pridavky", new Pridavky());
+            reg.rebind("objednavky", new Objednavky());
 
             System.out.println("Server ready");
         } catch (RemoteException e) {
