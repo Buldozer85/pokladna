@@ -5,6 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,25 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
 
     @Override
     public Polozka getPolozka(int id) {
-        return null;
+        Polozka polozka = null;
+        try (Connection conn = Database.get().getConnection();
+                PreparedStatement polozkaStmt = conn.prepareStatement(
+                        "SELECT polozky.ID, polozky.nazev, polozky.cena. polozky.druh, polozky.isActive FROM polozky WHERE polozky.ID = ?")) {
+            polozkaStmt.setInt(1, id);
+
+            try (ResultSet polozkaRs = polozkaStmt.executeQuery()) {
+                polozka = new Polozka().setId(polozkaRs.getInt("ID")).setNazev(polozkaRs.getString("nazev"))
+                        .setCena(polozkaRs.getDouble("cena")).setDruh(polozkaRs.getString("druh")).setActive(polozkaRs.getBoolean("isActive"));
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return polozka;
     }
 
     @Override
@@ -67,14 +86,16 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
     @Override
     public List<Polozka> getPolozky() throws RemoteException {
         List<Polozka> polozky = new ArrayList<>();
-        try (Connection conn = Database.get().getConnection()) {
-            Statement polozkyStmt = conn.createStatement();
-            ResultSet polozkyRs = polozkyStmt
-                    .executeQuery("SELECT polozky.ID, polozky.nazev, polozky.cena, polozky.druh FROM polozky");
+        try (Connection conn = Database.get().getConnection();
+                Statement polozkyStmt = conn.createStatement();
+                ResultSet polozkyRs = polozkyStmt.executeQuery(
+                        "SELECT polozky.ID, polozky.nazev, polozky.cena, polozky.druh,polozky.isActive FROM polozky WHERE polozky.isActive = 1")) {
+            ;
 
             while (polozkyRs.next()) {
                 Polozka polozka = new Polozka().setId(polozkyRs.getInt("ID")).setNazev(polozkyRs.getString("nazev"))
-                        .setCena(polozkyRs.getDouble("cena")).setDruh(polozkyRs.getString("druh"));
+                        .setCena(polozkyRs.getDouble("cena")).setDruh(polozkyRs.getString("druh"))
+                        .setActive(polozkyRs.getBoolean("isActive"));
                 polozky.add(polozka);
             }
 
@@ -83,6 +104,70 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
             return null;
         }
         return polozky;
+    }
+
+    @Override
+    public List<Polozka> getPolozkyAdmin() throws RemoteException {
+        List<Polozka> polozky = new ArrayList<>();
+        try (Connection conn = Database.get().getConnection();
+                Statement polozkyStmt = conn.createStatement();
+                ResultSet polozkyRs = polozkyStmt.executeQuery(
+                        "SELECT polozky.ID, polozky.nazev, polozky.cena, polozky.druh, polozky.isActive FROM polozky")) {
+            ;
+
+            while (polozkyRs.next()) {
+                Polozka polozka = new Polozka().setId(polozkyRs.getInt("ID")).setNazev(polozkyRs.getString("nazev"))
+                        .setCena(polozkyRs.getDouble("cena")).setDruh(polozkyRs.getString("druh"))
+                        .setActive(polozkyRs.getBoolean("isActive"));
+                polozky.add(polozka);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return polozky;
+    }
+
+    @Override
+    public boolean upravPolozka(Polozka polozka) throws RemoteException {
+        try (Connection conn = Database.get().getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement stmt = conn
+                    .prepareStatement("UPDATE polozky SET polozky.isActive = ?, polozky.nazev = ?, polozky.cena = ?, polozky.druh = ? WHERE polozky.ID = ?")) {
+                int pom;
+                if (polozka.isActive())
+                    pom = 1;
+                else
+                    pom = 0;
+                stmt.setInt(1, pom);
+                stmt.setString(2, polozka.getNazev());
+                stmt.setDouble(3, polozka.getCena());
+                stmt.setString(4, polozka.getDruh());
+                stmt.setInt(5, polozka.getId());
+                System.out.println(polozka.getId());
+
+                System.out.println(polozka.isActive());
+                System.out.println(polozka.getDruh());
+                if (stmt.executeUpdate() != 1) {
+                    throw new Exception("Nepodařilo se upravit polozku");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                conn.rollback();
+                System.out.println(e.getMessage());
+                throw e;
+            }
+            conn.commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return false;
+        }
+
     }
 
 }

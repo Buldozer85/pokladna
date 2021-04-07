@@ -8,12 +8,22 @@ public class Pridavek extends Produkty {
     private int id;
     private String nazev;
     private Double cena;
+    private boolean isActive;
   
 
     public Double getCena(){
         return cena;
     }
  
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public Pridavek setActive(boolean isActive) {
+        this.isActive = isActive;
+        return this;
+    }
+
     public Pridavek setCena(Double cena){
         this.cena = cena;
         return this;

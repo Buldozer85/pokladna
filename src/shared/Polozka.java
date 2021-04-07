@@ -13,9 +13,17 @@ public class Polozka extends Produkty {
     private Double cena;
     private String druh;
     private List<Pridavek> pridavky = new ArrayList<>();
+    private boolean isActive;
 
     public Double getCena(){
         return cena;
+    }
+    public boolean isActive() {
+        return isActive;
+    }
+    public Polozka setActive(boolean isActive) {
+        this.isActive = isActive;
+        return this;
     }
     public List<Pridavek> getPridavky() {
         return pridavky;
