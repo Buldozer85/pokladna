@@ -43,6 +43,7 @@ public class pridavekFrame extends JFrame {
                     Objednavka.getObjednavky().getLast().getPridavky().add(p);
 
                     hamburgeryFrame.addText("\t+" + p.getNazev() + " " + p.getCena() + " Kč");
+                    hamburgeryFrame.prictiCenu(p.getCena());
 
                 });
 

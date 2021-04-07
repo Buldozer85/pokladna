@@ -17,12 +17,14 @@ import javax.swing.*;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
+import shared.IUloziste;
 import shared.Objednavka;
 import shared.Objednavky;
 import shared.Polozka;
 import shared.Polozky;
 import shared.Pridavek;
 import shared.Tiskarna;
+import shared.Uloziste;
 
 public class hamburgeryFrame extends JFrame {
     /**
@@ -35,8 +37,8 @@ public class hamburgeryFrame extends JFrame {
     private java.awt.Container pane = this.getContentPane();
     private java.awt.Container obalBtn, obalText, obalPotvrdit;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    private  Double cena = 0.0;
-    private  Objednavka objednavka ;
+    private static Double cena = 0.0;
+    private Objednavka objednavka;
     private Tiskarna tiskarna;
 
     public hamburgeryFrame() {
@@ -79,7 +81,8 @@ public class hamburgeryFrame extends JFrame {
         obalPotvrdit.add(potvrdit);
         obalPotvrdit.add(storno);
 
-        storno.addActionListener((e)->{
+        storno.addActionListener((e) -> {
+            cena = 0.0;
             celkovaCenaPane.setText("");
             objednavkyPane.setText("Objednávka" + "\n" + "_________________________");
             Objednavka.getObjednavky().clear();
@@ -108,20 +111,23 @@ public class hamburgeryFrame extends JFrame {
 
                     addText("\n " + p.getNazev() + "\n\t" + p.getCena().toString() + " Kč");
 
-                    for (Polozka polozka : Objednavka.getObjednavky()) {
-                   
-                        if(!polozka.getPridavky().isEmpty()){
-                        for (Pridavek pridavek : polozka.getPridavky()) {
-                         System.out.println(pridavek.getNazev());
-                          cena += pridavek.getCena();
+                /*    for (Polozka polozka : Objednavka.getObjednavky()) {
+
+                        if (!polozka.getPridavky().isEmpty()) {
+                            for (Pridavek pridavek : polozka.getPridavky()) {
+                                System.out.println(pridavek.getNazev());
+                                cena += pridavek.getCena();
+                            }
+                        } else {
+System.out.println(cena + "??");
+                            cena += polozka.getCena();
+                            
+                            System.out.println(cena + "???");
                         }
-                    }
-                    else{
-        
-                        cena += polozka.getCena();
-                    }
-                }
-                celkovaCenaPane.setText("Cena\t" + cena.toString() + " Kč");
+                    }*/
+                    prictiCenu(Objednavka.getObjednavky().getLast().getCena()); 
+                   
+                    
                 });
 
                 obalBtn.add(b);
@@ -131,51 +137,55 @@ public class hamburgeryFrame extends JFrame {
             e.printStackTrace();
         }
 
-        potvrdit.addActionListener((e)->{
-           
+        potvrdit.addActionListener((e) -> {
+
             for (Polozka polozka : Objednavka.getObjednavky()) {
                 System.out.println(polozka.getNazev());
-                if(!polozka.getPridavky().isEmpty()){
-                for (Pridavek pridavek : polozka.getPridavky()) {
-                 System.out.println(pridavek.getNazev());
-                  cena += pridavek.getCena();
-                }
-            }
-            else{
+                if (!polozka.getPridavky().isEmpty()) {
+                    for (Pridavek pridavek : polozka.getPridavky()) {
+                        System.out.println(pridavek.getNazev());
+                        cena += pridavek.getCena();
+                    }
+                } else {
 
-                cena += polozka.getCena();
-            }
+                    cena += polozka.getCena();
+                }
             }
             try {
-                if(!Objednavka.getObjednavky().isEmpty()){
-                Objednavky objednavky = (Objednavky) Naming.lookup("rmi://localhost:12345/objednavky");
-                java.util.Date dt = new java.util.Date();
+                if (!Objednavka.getObjednavky().isEmpty()) {
+                    Objednavky objednavky = (Objednavky) Naming.lookup("rmi://localhost:12345/objednavky");
+                    java.util.Date dt = new java.util.Date();
 
-                java.text.SimpleDateFormat sdf = 
-                     new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                
-                String currentTime = sdf.format(dt);
-                LinkedList<Polozka> o = Objednavka.getObjednavky();
-                objednavka = new Objednavka().setCasObjednavky(currentTime).setCena(cena).setPolozky(o);
-                tiskarna = Tiskarna.getITiskarna();
-                tiskarna.Tiskni(objednavka);
-                objednavky.writeObjednavka(objednavka);
-                o = null;
-                Objednavka.getObjednavky().clear();
-                this.setVisible(false);
-                new PokladnaUvodniFrame().setVisible(true);
-                }
-                else{
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                    String currentTime = sdf.format(dt);
+                    LinkedList<Polozka> o = Objednavka.getObjednavky();
+                    objednavka = new Objednavka().setCasObjednavky(currentTime).setCena(cena).setPolozky(o);
+                    tiskarna = Tiskarna.getITiskarna();
+                    tiskarna.Tiskni(objednavka);
+                    objednavky.writeObjednavka(objednavka);
+                    try {
+                        IUloziste uloziste = (IUloziste) Naming.lookup("rmi://localhost:12345/uloziste");
+                        if (!uloziste.zapisDoUloziste(objednavka))
+                            throw new Exception("Nepodařilo se zapsat na server objednavku");
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+
+                    }
+
+                    o = null;
+                    Objednavka.getObjednavky().clear();
+                    this.setVisible(false);
+                    new PokladnaUvodniFrame().setVisible(true);
+                } else {
                     JOptionPane.showMessageDialog(this, "Objednávka neobsahuje žádnou položku");
                 }
-              
 
-           
             } catch (RemoteException | NotBoundException | MalformedURLException ex) {
-        
+
                 ex.printStackTrace();
             }
-     
 
         });
 
@@ -184,6 +194,12 @@ public class hamburgeryFrame extends JFrame {
     public static void addText(String Text) {
         if (objednavkyPane != null)
             objednavkyPane.setText(objednavkyPane.getText() + "\n" + Text);
+
+    }
+    public static void prictiCenu(Double Cena) {
+       
+        cena += Cena;
+           celkovaCenaPane.setText("Cena\t" + cena + " Kč");
 
     }
 
