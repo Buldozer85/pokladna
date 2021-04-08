@@ -15,50 +15,58 @@ public class Polozka extends Produkty {
     private List<Pridavek> pridavky = new ArrayList<>();
     private boolean isActive;
 
-    public Double getCena(){
+    public Double getCena() {
         return cena;
     }
+
     public boolean isActive() {
         return isActive;
     }
+
     public Polozka setActive(boolean isActive) {
         this.isActive = isActive;
         return this;
     }
+
     public List<Pridavek> getPridavky() {
         return pridavky;
     }
+
     public Polozka setPridavky(List<Pridavek> pridavky) {
         this.pridavky = pridavky;
         return this;
     }
+
     public String getDruh() {
         return druh;
     }
+
     public Polozka setDruh(String druh) {
         this.druh = druh;
         return this;
     }
-    public Polozka setCena(Double cena){
+
+    public Polozka setCena(Double cena) {
         this.cena = cena;
         return this;
     }
 
-    public String getNazev(){
+    public String getNazev() {
         return nazev;
     }
-    public Polozka setNazev(String nazev){
-         this.nazev = nazev;
+
+    public Polozka setNazev(String nazev) {
+        this.nazev = nazev;
         return this;
     }
-    public int getId(){
+
+    public int getId() {
         return id;
     }
+
     public Polozka setId(int id) {
         this.id = id;
         return this;
     }
 
-    
-    
 }

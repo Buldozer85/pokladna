@@ -14,7 +14,7 @@ public class AdministraceRozcesti extends JFrame {
      */
     private static final long serialVersionUID = 8354716607326597238L;
     private Container obal = this.getContentPane();
-    private JButton polozkyBtn, pridavkyBtn;
+    private JButton polozkyBtn, pridavkyBtn, zpetButton;
     private polozkyVyberUprava uVyberUprava;
     private pridavkyVyberUprava pridavkyVyberUprava;
 
@@ -26,6 +26,7 @@ public class AdministraceRozcesti extends JFrame {
     private void initComponents() {
         polozkyBtn = new JButton("Položky administrace");
         pridavkyBtn = new JButton("Přídavky administrace");
+        zpetButton = new JButton("Zpět");
 
         FlowLayout fl = new FlowLayout();
         fl.setHgap(10);
@@ -35,6 +36,7 @@ public class AdministraceRozcesti extends JFrame {
 
         obal.add(polozkyBtn);
         obal.add(pridavkyBtn);
+        obal.add(zpetButton);
 
         polozkyBtn.addActionListener((e) -> {
             uVyberUprava = new polozkyVyberUprava();
@@ -45,6 +47,11 @@ public class AdministraceRozcesti extends JFrame {
         pridavkyBtn.addActionListener((e) -> {
             pridavkyVyberUprava = new pridavkyVyberUprava();
             pridavkyVyberUprava.setVisible(true);
+        });
+
+        zpetButton.addActionListener((l)->{
+            this.setVisible(false);
+            new AdminUvodniFrame().setVisible(true);
         });
 
     }

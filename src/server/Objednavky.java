@@ -28,12 +28,6 @@ public class Objednavky extends UnicastRemoteObject implements shared.Objednavky
     }
 
     @Override
-    public Objednavka getObjednavka(int id) throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public List<Objednavka> getObjednavky() throws RemoteException {
         List<Objednavka> objednavky = new ArrayList<>();
 
@@ -113,7 +107,7 @@ public class Objednavky extends UnicastRemoteObject implements shared.Objednavky
                     "INSERT INTO objednavky (celkovaCena, casObjednavky) VALUES (?,?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setDouble(1, objednavka.getCena());
-                System.out.println(objednavka.getPolozky());
+                
 
                 stmt.setString(2, objednavka.getCasObjednavky());
 
@@ -141,7 +135,7 @@ public class Objednavky extends UnicastRemoteObject implements shared.Objednavky
 
                     if (polozka.getPridavky().isEmpty() == false) {
                         for (Pridavek pridavek : polozka.getPridavky()) {
-                            System.out.println(pridavek.getNazev());
+                            
                             stmt.setInt(1, polozka.getId());
                             stmt.setInt(2, pridavek.getId());
                             stmt.executeUpdate();

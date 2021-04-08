@@ -24,7 +24,6 @@ import shared.Polozka;
 import shared.Polozky;
 import shared.Pridavek;
 import shared.Tiskarna;
-import shared.Uloziste;
 
 public class hamburgeryFrame extends JFrame {
     /**
@@ -111,23 +110,8 @@ public class hamburgeryFrame extends JFrame {
 
                     addText("\n " + p.getNazev() + "\n\t" + p.getCena().toString() + " Kč");
 
-                /*    for (Polozka polozka : Objednavka.getObjednavky()) {
+                    prictiCenu(Objednavka.getObjednavky().getLast().getCena());
 
-                        if (!polozka.getPridavky().isEmpty()) {
-                            for (Pridavek pridavek : polozka.getPridavky()) {
-                                System.out.println(pridavek.getNazev());
-                                cena += pridavek.getCena();
-                            }
-                        } else {
-System.out.println(cena + "??");
-                            cena += polozka.getCena();
-                            
-                            System.out.println(cena + "???");
-                        }
-                    }*/
-                    prictiCenu(Objednavka.getObjednavky().getLast().getCena()); 
-                   
-                    
                 });
 
                 obalBtn.add(b);
@@ -139,18 +123,7 @@ System.out.println(cena + "??");
 
         potvrdit.addActionListener((e) -> {
 
-            for (Polozka polozka : Objednavka.getObjednavky()) {
-                System.out.println(polozka.getNazev());
-                if (!polozka.getPridavky().isEmpty()) {
-                    for (Pridavek pridavek : polozka.getPridavky()) {
-                        System.out.println(pridavek.getNazev());
-                        cena += pridavek.getCena();
-                    }
-                } else {
-
-                    cena += polozka.getCena();
-                }
-            }
+          
             try {
                 if (!Objednavka.getObjednavky().isEmpty()) {
                     Objednavky objednavky = (Objednavky) Naming.lookup("rmi://localhost:12345/objednavky");
@@ -163,7 +136,8 @@ System.out.println(cena + "??");
                     objednavka = new Objednavka().setCasObjednavky(currentTime).setCena(cena).setPolozky(o);
                     tiskarna = Tiskarna.getITiskarna();
                     tiskarna.Tiskni(objednavka);
-                    objednavky.writeObjednavka(objednavka);
+                    
+                    
                     try {
                         IUloziste uloziste = (IUloziste) Naming.lookup("rmi://localhost:12345/uloziste");
                         if (!uloziste.zapisDoUloziste(objednavka))
@@ -173,11 +147,15 @@ System.out.println(cena + "??");
                         ex.printStackTrace();
 
                     }
+                    if(objednavky.writeObjednavka(objednavka)) {
+                        cena = 0.0;
+                        o = null;
+                        Objednavka.getObjednavky().clear();
+                        this.setVisible(false);
+                        new PokladnaUvodniFrame().setVisible(true);
+                    }
 
-                    o = null;
-                    Objednavka.getObjednavky().clear();
-                    this.setVisible(false);
-                    new PokladnaUvodniFrame().setVisible(true);
+                 
                 } else {
                     JOptionPane.showMessageDialog(this, "Objednávka neobsahuje žádnou položku");
                 }
@@ -196,10 +174,11 @@ System.out.println(cena + "??");
             objednavkyPane.setText(objednavkyPane.getText() + "\n" + Text);
 
     }
+
     public static void prictiCenu(Double Cena) {
-       
+
         cena += Cena;
-           celkovaCenaPane.setText("Cena\t" + cena + " Kč");
+        celkovaCenaPane.setText("Cena\t" + cena + " Kč");
 
     }
 

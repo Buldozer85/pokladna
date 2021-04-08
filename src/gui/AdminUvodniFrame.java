@@ -3,9 +3,6 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-
-
-
 public class AdminUvodniFrame extends javax.swing.JFrame {
         /**
          *

@@ -16,7 +16,6 @@ import java.awt.Dimension;
 import javax.swing.JTextField;
 import java.awt.FlowLayout;
 
-
 import shared.Polozka;
 import shared.Polozky;
 
@@ -24,21 +23,18 @@ public class polozkyUpravaFrame extends JFrame {
     private Polozka p1;
     private static final long serialVersionUID = 127860281665570197L;
     private JTextField nazevTextField, cenaTextField;
-    private JButton potvrdVlozeniButton;
+    private JButton potvrdVlozeniButton, zpetButton;
     private JComboBox<String> druhBox;
     private JCheckBox isActive;
     private JLabel isActiveLabel;
     private JPanel obalIsActive, obalCely;
-    
 
     public polozkyUpravaFrame(Polozka p1) {
         this.p1 = p1;
         initComponents();
-       
+
         this.setSize(new Dimension(300, 500));
     }
-
-
 
     private void initComponents() {
         nazevTextField = new JTextField();
@@ -50,6 +46,7 @@ public class polozkyUpravaFrame extends JFrame {
         isActiveLabel = new JLabel();
         obalIsActive = new JPanel();
         obalCely = new JPanel();
+        zpetButton = new JButton("Zpět");
         isActive.setText("Aktivní: ");
         String[] druhy = { "Hamberger", "Piti", "Wrap", "Hranolky" };
         druhBox = new JComboBox<>(druhy);
@@ -60,21 +57,21 @@ public class polozkyUpravaFrame extends JFrame {
             isActive.setSelected(true);
         }
 
-
         potvrdVlozeniButton.addActionListener((e) -> {
             try {
                 Polozky polozky = (Polozky) Naming.lookup("rmi://localhost:12345/polozky");
                 Polozka p = new Polozka().setId(p1.getId()).setNazev(nazevTextField.getText())
                         .setCena(Double.parseDouble(cenaTextField.getText()))
                         .setDruh((String) druhBox.getItemAt(druhBox.getSelectedIndex()));
-                if (isActive.isSelected()){
+                if (isActive.isSelected()) {
                     p.setActive(true);
                     p1.setActive(true);
-                }else{ 
+                } else {
                     p.setActive(false);
                     p1.setActive(false);
-                
-                };
+
+                }
+                ;
 
                 if (!polozky.upravPolozka(p)) {
                     JOptionPane.showMessageDialog(this, "Nepodařilo se Upravit položku");
@@ -83,16 +80,27 @@ public class polozkyUpravaFrame extends JFrame {
                     JOptionPane.showMessageDialog(this,
                             "Položka: " + nazevTextField.getText() + "Byla úspěšně upravena");
                     this.setVisible(false);
+                    new polozkyVyberUprava().setVisible(true);
                 }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+           
+            
         });
 
         potvrdVlozeniButton.setAlignmentX(CENTER_ALIGNMENT);
         potvrdVlozeniButton.setAlignmentY(CENTER_ALIGNMENT);
-        
+
+        zpetButton.setAlignmentX(CENTER_ALIGNMENT);
+        zpetButton.setAlignmentY(CENTER_ALIGNMENT);
+
+        zpetButton.addActionListener((l)->{
+            this.setVisible(false);
+            new polozkyVyberUprava().setVisible(true);
+        });
+
         BoxLayout b = new BoxLayout(obalCely, BoxLayout.PAGE_AXIS);
         FlowLayout fl = new FlowLayout();
         pane.setLayout(fl);
@@ -108,13 +116,15 @@ public class polozkyUpravaFrame extends JFrame {
         obalCely.add(Box.createRigidArea(new Dimension(40, 40)));
         obalCely.add(druhBox);
         obalCely.add(Box.createRigidArea(new Dimension(40, 40)));
-        
+
         obalIsActive.setLayout(fl);
         obalIsActive.add(isActiveLabel);
         obalIsActive.add(isActive);
         obalCely.add(obalIsActive);
         obalCely.add(Box.createRigidArea(new Dimension(80, 40)));
         obalCely.add(potvrdVlozeniButton);
+        obalCely.add(Box.createRigidArea(new Dimension(20, 20)));
+        obalCely.add(zpetButton);
 
     }
 

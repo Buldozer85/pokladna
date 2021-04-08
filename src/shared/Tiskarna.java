@@ -6,8 +6,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-
-
 import java.text.SimpleDateFormat;
 
 public class Tiskarna {
@@ -29,23 +27,23 @@ public class Tiskarna {
             DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
             String result = df.format(date);
             fw.write("Objednávka z " + result);
-            fw.write("\n_____________________");
+            fw.write("\n");
+            fw.write("_____________________");
             fw.write("\n");
             for (Polozka polozka : uctenka.getPolozky()) {
                 fw.write("\t" + polozka.getNazev() + "\t" + polozka.getCena().toString() + " Kč");
                 fw.write("\n");
                 for (Pridavek pridavek : polozka.getPridavky()) {
-                    fw.write("\n\t\t" + "+" + pridavek.getNazev() + "\t" + pridavek.getCena().toString() + " Kč");
+                    fw.write("\n\t" + "+" + pridavek.getNazev() + "\t" + pridavek.getCena().toString() + " Kč");
 
                 }
                 fw.write("\n");
             }
             fw.write("\n Celková cena: " + uctenka.getCena().toString());
-            
 
-        } catch (IOException  | ParseException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
-            
+
         }
     }
 

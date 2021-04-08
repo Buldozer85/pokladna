@@ -1,5 +1,6 @@
 package gui;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,7 +9,7 @@ import shared.Polozka;
 import shared.Polozky;
 
 import java.awt.Container;
-import java.awt.FlowLayout;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -24,7 +25,7 @@ public class polozkyVyberUprava extends JFrame {
      */
     private static final long serialVersionUID = 1L;
     private Container obal = this.getContentPane();
-    private JButton b;
+    private JButton b, zpetButton;
     private polozkyUpravaFrame upravaFrame;
     private JPanel obalCely;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -38,17 +39,22 @@ public class polozkyVyberUprava extends JFrame {
 
     private void initComponents() {
         obalCely = new JPanel();
-        FlowLayout fl = new FlowLayout();
-        
-        
+        zpetButton = new JButton("Zpět");
+        BoxLayout boxl = new BoxLayout(obal, BoxLayout.Y_AXIS);
 
         GridLayout gl = new GridLayout();
         gl.setHgap(5);
         gl.setVgap(5);
 
         obalCely.setLayout(gl);
-        obal.setLayout(fl);
+        obal.setLayout(boxl);
         obal.add(obalCely);
+        obal.add(zpetButton);
+
+        zpetButton.addActionListener((e) -> {
+            this.setVisible(false);
+            new AdministraceRozcesti().setVisible(true);
+        });
 
         try {
             Polozky polozky = (Polozky) Naming.lookup("rmi://localhost:12345/polozky");
@@ -57,10 +63,11 @@ public class polozkyVyberUprava extends JFrame {
                 b = new JButton(p.getNazev());
 
                 b.addActionListener((l) -> {
-                    System.out.println(p.getId() + "klik");
+                    
 
                     upravaFrame = new polozkyUpravaFrame(p);
                     upravaFrame.setVisible(true);
+                    this.setVisible(false);
                 });
 
                 obalCely.add(b);

@@ -1,6 +1,5 @@
 package client;
 
-import java.time.Instant;
 
 import gui.AdminUvodniFrame;
 
@@ -9,8 +8,6 @@ public class Administrator {
 
     AdminUvodniFrame admin = new AdminUvodniFrame();
     admin.setVisible(true);
-    Instant i =  Instant.now();
-    System.out.println(i);
 
   }
 }

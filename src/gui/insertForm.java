@@ -34,16 +34,17 @@ public class insertForm extends JFrame {
         nazevTextField = new JTextField();
         cenaTextField = new JTextField();
         potvrdVlozeniButton = new JButton("Vložit");
-        String [] druhy = {"Hamberger","Piti", "Wrap", "Hranolky"};
-         druhBox = new JComboBox<>(druhy);
-         druhBox.setBounds(50, 100,90,20);
+        String[] druhy = { "Hamberger", "Piti", "Wrap", "Hranolky" };
+        druhBox = new JComboBox<>(druhy);
+        druhBox.setBounds(50, 100, 90, 20);
         java.awt.Container pane = this.getContentPane();
 
         potvrdVlozeniButton.addActionListener((e) -> {
             try {
                 Polozky polozky = (Polozky) Naming.lookup("rmi://localhost:12345/polozky");
                 Polozka p = new Polozka().setNazev(nazevTextField.getText())
-                        .setCena(Double.parseDouble(cenaTextField.getText())).setDruh((String)druhBox.getItemAt(druhBox.getSelectedIndex()));
+                        .setCena(Double.parseDouble(cenaTextField.getText()))
+                        .setDruh((String) druhBox.getItemAt(druhBox.getSelectedIndex()));
                 if (!polozky.writePolozka(p)) {
                     JOptionPane.showMessageDialog(this, "Nepodařilo se zapsat položku");
 
@@ -68,7 +69,6 @@ public class insertForm extends JFrame {
         pane.add(cenaTextField);
         pane.add(druhBox);
         pane.add(potvrdVlozeniButton);
-
 
     }
 

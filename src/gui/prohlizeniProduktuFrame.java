@@ -34,18 +34,18 @@ public class prohlizeniProduktuFrame extends JFrame {
         initComponents();
     }
 
-    private void initComponents(){
+    private void initComponents() {
         obalPolozky = new JPanel();
         obalPridavky = new JPanel();
 
         BoxLayout boxL = new BoxLayout(obal, BoxLayout.Y_AXIS);
-    obal.setLayout(boxL);
+        obal.setLayout(boxL);
 
-    polozkyLabel = new JLabel();
-    polozkyLabel.setText("Položky");
-    polozkyLabel.setHorizontalAlignment(JLabel.CENTER);
-    obal.add(polozkyLabel);
-    
+        polozkyLabel = new JLabel();
+        polozkyLabel.setText("Položky");
+        polozkyLabel.setHorizontalAlignment(JLabel.CENTER);
+        obal.add(polozkyLabel);
+
         GridLayout gl = new GridLayout();
 
         gl.setHgap(5);
@@ -58,33 +58,27 @@ public class prohlizeniProduktuFrame extends JFrame {
             for (Polozka p : polozky.getPolozky()) {
 
                 b = new JButton(p.getNazev());
-                b.setSize(new Dimension(10,10));
+                b.setSize(new Dimension(10, 10));
 
-                
-                   
-                  
-
-                    
                 obalPolozky.add(b);
-                }
-            }catch (RemoteException | NotBoundException | MalformedURLException e) {
-                e.printStackTrace();
             }
-            obal.add(obalPolozky);
+        } catch (RemoteException | NotBoundException | MalformedURLException e) {
+            e.printStackTrace();
+        }
+        obal.add(obalPolozky);
 
-            pridavkyLabel = new JLabel();
-            pridavkyLabel.setText("Přídavky");
-            pridavkyLabel.setHorizontalAlignment(JLabel.CENTER);
-            obalPridavky.setLayout(gl);
-            obal.add(pridavkyLabel);
-            obal.add(obalPridavky);
-           
+        pridavkyLabel = new JLabel();
+        pridavkyLabel.setText("Přídavky");
+        pridavkyLabel.setHorizontalAlignment(JLabel.CENTER);
+        obalPridavky.setLayout(gl);
+        obal.add(pridavkyLabel);
+        obal.add(obalPridavky);
+
         try {
             Pridavky pridavky = (Pridavky) Naming.lookup("rmi://localhost:12345/pridavky");
             for (Pridavek p : pridavky.getPridavky()) {
 
                 b = new JButton(p.getNazev());
-               
 
                 obalPridavky.add(b);
 

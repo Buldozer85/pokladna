@@ -1,6 +1,5 @@
 package shared;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.Duration;
@@ -10,8 +9,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Uloziste  extends UnicastRemoteObject implements IUloziste, Serializable {
-  
+public class Uloziste extends UnicastRemoteObject implements IUloziste {
+
     /**
      *
      */
@@ -21,41 +20,41 @@ public class Uloziste  extends UnicastRemoteObject implements IUloziste, Seriali
     public Uloziste() throws RemoteException {
 
         Timer timer = new Timer();
-        TimerTask hodina = new TimerTask(){
+        TimerTask hodina = new TimerTask() {
             @Override
-            public void run () {
+            public void run() {
                 AutomatickeMazani();
             }
         };
-        timer.schedule(hodina,01,1000*60*60);
+        timer.schedule(hodina, 01, 1000 * 60 * 60);
     }
 
     @Override
     public List<Objednavka> vratObjednavky() throws RemoteException {
-      
+
         return this.listObjednavek;
     }
 
     @Override
     public boolean zapisDoUloziste(Objednavka objednavka) {
-        if(this.listObjednavek.add(objednavka)) return true;
-        else return false;
+        if (this.listObjednavek.add(objednavka))
+            return true;
+        else
+            return false;
     }
-    
 
-    private void AutomatickeMazani(){
-        if(!this.listObjednavek.isEmpty()){
-        for (Objednavka objednavka : listObjednavek) {
-            Instant casObj = Instant.parse(objednavka.getCasObjednavky());
-            Instant now = Instant.now();
-            
-            if (Duration.between(casObj, now).compareTo(Duration.ofMinutes(10)) == 1) {
-                this.listObjednavek.remove(objednavka);
+    private void AutomatickeMazani() {
+        if (!this.listObjednavek.isEmpty()) {
+            for (Objednavka objednavka : listObjednavek) {
+                Instant casObj = Instant.parse(objednavka.getCasObjednavky());
+                Instant now = Instant.now();
+
+                if (Duration.between(casObj, now).compareTo(Duration.ofMinutes(10)) == 1) {
+                    this.listObjednavek.remove(objednavka);
+                }
             }
+
         }
-        
     }
-    }
-    
 
 }

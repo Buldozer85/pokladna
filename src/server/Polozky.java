@@ -24,28 +24,7 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
         super();
     }
 
-    @Override
-    public Polozka getPolozka(int id) {
-        Polozka polozka = null;
-        try (Connection conn = Database.get().getConnection();
-                PreparedStatement polozkaStmt = conn.prepareStatement(
-                        "SELECT polozky.ID, polozky.nazev, polozky.cena. polozky.druh, polozky.isActive FROM polozky WHERE polozky.ID = ?")) {
-            polozkaStmt.setInt(1, id);
-
-            try (ResultSet polozkaRs = polozkaStmt.executeQuery()) {
-                polozka = new Polozka().setId(polozkaRs.getInt("ID")).setNazev(polozkaRs.getString("nazev"))
-                        .setCena(polozkaRs.getDouble("cena")).setDruh(polozkaRs.getString("druh")).setActive(polozkaRs.getBoolean("isActive"));
-            } catch (Exception e) {
-                e.printStackTrace();
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return polozka;
-    }
+   
 
     @Override
     public boolean writePolozka(Polozka polozka) throws RemoteException {
@@ -134,8 +113,8 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
         try (Connection conn = Database.get().getConnection()) {
             conn.setAutoCommit(false);
 
-            try (PreparedStatement stmt = conn
-                    .prepareStatement("UPDATE polozky SET polozky.isActive = ?, polozky.nazev = ?, polozky.cena = ?, polozky.druh = ? WHERE polozky.ID = ?")) {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE polozky SET polozky.isActive = ?, polozky.nazev = ?, polozky.cena = ?, polozky.druh = ? WHERE polozky.ID = ?")) {
                 int pom;
                 if (polozka.isActive())
                     pom = 1;
@@ -146,10 +125,10 @@ public class Polozky extends UnicastRemoteObject implements shared.Polozky {
                 stmt.setDouble(3, polozka.getCena());
                 stmt.setString(4, polozka.getDruh());
                 stmt.setInt(5, polozka.getId());
-                System.out.println(polozka.getId());
+               
 
-                System.out.println(polozka.isActive());
-                System.out.println(polozka.getDruh());
+                
+               
                 if (stmt.executeUpdate() != 1) {
                     throw new Exception("Nepodařilo se upravit polozku");
                 }

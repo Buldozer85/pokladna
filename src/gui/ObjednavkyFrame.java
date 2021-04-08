@@ -83,7 +83,7 @@ public class ObjednavkyFrame extends JFrame {
 
                 });
                 zpetNaUvodni = new JButton("Zpět");
-                zpetNaUvodni.addActionListener((e)->{
+                zpetNaUvodni.addActionListener((e) -> {
                     this.setVisible(false);
                     new PokladnaUvodniFrame().setVisible(true);
                 });

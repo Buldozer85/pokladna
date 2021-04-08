@@ -1,4 +1,5 @@
 package server;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,5 +20,5 @@ public class Server {
             e.printStackTrace();
         }
     }
-    
+
 }

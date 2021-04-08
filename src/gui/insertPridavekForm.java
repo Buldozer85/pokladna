@@ -20,7 +20,6 @@ public class insertPridavekForm extends JFrame {
     private static final long serialVersionUID = -7115827006528791185L;
     private JTextField nazevTextField, cenaTextField;
     private JButton potvrdVlozeniButton;
-    
 
     public insertPridavekForm() {
         super();
@@ -33,8 +32,7 @@ public class insertPridavekForm extends JFrame {
         nazevTextField = new JTextField();
         cenaTextField = new JTextField();
         potvrdVlozeniButton = new JButton("Vložit");
-        
-    
+
         java.awt.Container pane = this.getContentPane();
 
         potvrdVlozeniButton.addActionListener((e) -> {
@@ -46,8 +44,7 @@ public class insertPridavekForm extends JFrame {
                     JOptionPane.showMessageDialog(this, "Nepodařilo se zapsat přídavek");
 
                 } else {
-                    JOptionPane.showMessageDialog(this,
-                            "Přídavek: " + nazevTextField.getText() + "Byl úspěšně zapsán");
+                    JOptionPane.showMessageDialog(this, "Přídavek: " + nazevTextField.getText() + "Byl úspěšně zapsán");
                     this.setVisible(false);
                 }
 
@@ -64,9 +61,8 @@ public class insertPridavekForm extends JFrame {
         nazevTextField.setAlignmentX(CENTER_ALIGNMENT);
         nazevTextField.setAlignmentY(CENTER_ALIGNMENT);
         pane.add(cenaTextField);
-       
-        pane.add(potvrdVlozeniButton);
 
+        pane.add(potvrdVlozeniButton);
 
     }
 }

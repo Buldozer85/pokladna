@@ -22,7 +22,7 @@ public class pridavkyVyberUprava extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private Container obal = this.getContentPane();
-    private JButton b;
+    private JButton b, zpetButton;
     private pridavkyUpravaFrame upravaFrame;
     private JPanel obalCely;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -36,6 +36,7 @@ public class pridavkyVyberUprava extends JFrame {
 
     private void initComponents() {
         obalCely = new JPanel();
+        zpetButton = new JButton("Zpět");
         FlowLayout fl = new FlowLayout();
 
         GridLayout gl = new GridLayout();
@@ -45,6 +46,12 @@ public class pridavkyVyberUprava extends JFrame {
         obalCely.setLayout(gl);
         obal.setLayout(fl);
         obal.add(obalCely);
+        obal.add(zpetButton);
+
+        zpetButton.addActionListener((e)->{
+            this.setVisible(false);
+            new AdministraceRozcesti().setVisible(true);
+        });
 
         try {
             Pridavky pridavky = (Pridavky) Naming.lookup("rmi://localhost:12345/pridavky");
@@ -56,6 +63,7 @@ public class pridavkyVyberUprava extends JFrame {
 
                     upravaFrame = new pridavkyUpravaFrame(p);
                     upravaFrame.setVisible(true);
+                    this.setVisible(false);
                 });
 
                 obalCely.add(b);

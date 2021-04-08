@@ -21,8 +21,8 @@ public class pridavkyUpravaFrame extends JFrame {
     private Pridavek p1;
     private static final long serialVersionUID = 127860281665570197L;
     private JTextField nazevTextField, cenaTextField;
-    private JButton potvrdVlozeniButton;
- 
+    private JButton potvrdVlozeniButton,zpetButton;
+
     private JCheckBox isActive;
     private JLabel isActiveLabel;
     private JPanel obalIsActive, obalCely;
@@ -30,11 +30,11 @@ public class pridavkyUpravaFrame extends JFrame {
     public pridavkyUpravaFrame(Pridavek p1) {
         this.p1 = p1;
         initComponents();
-       
+
         this.setSize(new Dimension(300, 500));
     }
 
-    public void initComponents()  {
+    public void initComponents() {
         nazevTextField = new JTextField();
         nazevTextField.setText(p1.getNazev());
         cenaTextField = new JTextField();
@@ -45,12 +45,12 @@ public class pridavkyUpravaFrame extends JFrame {
         obalIsActive = new JPanel();
         obalCely = new JPanel();
         isActive.setText("Aktivní: ");
-       
+        zpetButton = new JButton("Zpět");
+
         java.awt.Container pane = this.getContentPane();
         if (p1.isActive()) {
             isActive.setSelected(true);
         }
-
 
         potvrdVlozeniButton.addActionListener((e) -> {
             try {
@@ -59,7 +59,8 @@ public class pridavkyUpravaFrame extends JFrame {
                         .setCena(Double.parseDouble(cenaTextField.getText()));
                 if (isActive.isSelected())
                     p.setActive(true);
-                else p.setActive(false);
+                else
+                    p.setActive(false);
 
                 if (!pridavky.upravPridavek(p)) {
                     JOptionPane.showMessageDialog(this, "Nepodařilo se Upravit přídavek");
@@ -68,16 +69,25 @@ public class pridavkyUpravaFrame extends JFrame {
                     JOptionPane.showMessageDialog(this,
                             "Přídavek: " + nazevTextField.getText() + "byl úspěšně upraven");
                     this.setVisible(false);
+                    new pridavkyVyberUprava().setVisible(true);
                 }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        
         });
 
         potvrdVlozeniButton.setAlignmentX(CENTER_ALIGNMENT);
         potvrdVlozeniButton.setAlignmentY(CENTER_ALIGNMENT);
-        
+
+        zpetButton.setAlignmentX(CENTER_ALIGNMENT);
+        zpetButton.setAlignmentY(CENTER_ALIGNMENT);
+        zpetButton.addActionListener((l)->{
+            this.setVisible(false);
+            new pridavkyVyberUprava().setVisible(true);
+        });
+
         BoxLayout b = new BoxLayout(obalCely, BoxLayout.PAGE_AXIS);
         FlowLayout fl = new FlowLayout();
         pane.setLayout(fl);
@@ -91,16 +101,16 @@ public class pridavkyUpravaFrame extends JFrame {
         nazevTextField.setAlignmentY(CENTER_ALIGNMENT);
         obalCely.add(cenaTextField);
         obalCely.add(Box.createRigidArea(new Dimension(40, 40)));
-        
- 
-        
+
         obalIsActive.setLayout(fl);
         obalIsActive.add(isActiveLabel);
         obalIsActive.add(isActive);
         obalCely.add(obalIsActive);
-        obalCely.add(Box.createRigidArea(new Dimension(80, 40)));
+        obalCely.add(Box.createRigidArea(new Dimension(40, 40)));
         obalCely.add(potvrdVlozeniButton);
+        obalCely.add(Box.createRigidArea(new Dimension(20, 20)));
+        obalCely.add(zpetButton);
 
     }
-    
+
 }

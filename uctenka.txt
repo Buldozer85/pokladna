@@ -1,11 +1,11 @@
-Objednávka z 07.04.2021 21:22:19
+Objednávka z 08.04.2021 11:01:35
 _____________________
 	McDvoři	25.5 Kč
 
 	DvořiBurger se sýrem	55.5 Kč
 
-		+Omacka	5.4 Kč
+	+Omacka	5.4 Kč
 	DvořiBurger	35.5 Kč
 
 
- Celková cena: 188.3
+ Celková cena: 121.9
