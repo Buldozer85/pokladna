@@ -22,7 +22,7 @@ import shared.Objednavka;
 import shared.Objednavky;
 import shared.Polozka;
 import shared.Polozky;
-import shared.Pridavek;
+
 import shared.Tiskarna;
 
 public class hamburgeryFrame extends JFrame {

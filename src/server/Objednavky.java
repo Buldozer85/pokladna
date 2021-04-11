@@ -127,35 +127,7 @@ public class Objednavky extends UnicastRemoteObject implements shared.Objednavky
                 throw e;
             }
 
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO polozkamapridavky(Polozky_ID, Pridavek_ID) VALUES(?,?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-                for (Polozka polozka : objednavka.getPolozky()) {
-
-                    if (polozka.getPridavky().isEmpty() == false) {
-                        for (Pridavek pridavek : polozka.getPridavky()) {
-                            
-                            stmt.setInt(1, polozka.getId());
-                            stmt.setInt(2, pridavek.getId());
-                            stmt.executeUpdate();
-
-                        }
-
-                    } else {
-                        stmt.setInt(1, polozka.getId());
-                        stmt.setNull(2, 4);
-                        stmt.executeUpdate();
-
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(e.getMessage());
-                conn.rollback();
-                throw e;
-            }
+           
 
             try (PreparedStatement stmt = conn.prepareStatement(
                     "INSERT INTO polozky_v_objednavce (Objednavka_ID, Polozka_ID, Pridavek_ID, cisloPolozkyVobjednavce) VALUES(?,?,?,?) ",
